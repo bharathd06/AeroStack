@@ -1,0 +1,2383 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+def main():
+    print("=== AeroStack UI Suite — Installer ===")
+    
+    # Locate index.html dynamically relative to this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    filepath = os.path.join(script_dir, "index.html")
+    
+    print(f"Target UI Path: {filepath}")
+    
+    # Beautiful, premium AeroStack HTML content
+    html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AeroStack — Compile-Time Stack Depth & Frame Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #07070d;
+  --bg-sidebar: #0b0a14;
+  --glass-bg: rgba(16, 15, 27, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-border-focus: rgba(14, 165, 233, 0.4);
+  --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  
+  --primary: #0ea5e9;
+  --primary-glow: rgba(14, 165, 233, 0.25);
+  --primary-gradient: linear-gradient(135deg, #0ea5e9, #2563eb);
+  
+  --accent: #8b5cf6;
+  --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+  
+  --success: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.15);
+  --success-gradient: linear-gradient(135deg, #10b981, #059669);
+  
+  --danger: #f43f5e;
+  --danger-glow: rgba(244, 63, 94, 0.15);
+  --danger-gradient: linear-gradient(135deg, #f43f5e, #be123c);
+  
+  --warning: #f59e0b;
+  --warning-glow: rgba(245, 158, 11, 0.15);
+  --warning-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+  
+  --text-main: #f8fafc;
+  --text-muted: #64748b;
+  --text-muted-light: #94a3b8;
+  
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { 
+  background-color: var(--bg-deep); 
+  color: var(--text-main); 
+  font-family: var(--font-sans); 
+  min-height: 100vh; 
+  line-height: 1.5;
+  overflow-x: hidden;
+  display: flex;
+}
+
+/* Stunning shifting aura backgrounds */
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+  filter: blur(40px);
+}
+
+/* Glassmorphism base layout */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Layout Division */
+.sidebar {
+  width: 320px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--glass-border);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  z-index: 10;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.main-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  min-width: 0;
+}
+
+.topbar {
+  height: 70px;
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(7, 7, 13, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.topbar-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted-light);
+  font-family: var(--font-mono);
+}
+
+.topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.container {
+  padding: 2.5rem;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+  flex: 1;
+}
+
+/* Logo Design */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.logo-box {
+  width: 42px;
+  height: 42px;
+  background: var(--primary-gradient);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-box::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+}
+
+.logo-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(120deg, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Connection Sentinel */
+.sentinel {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sentinel-lbl {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sentinel-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warning);
+  box-shadow: 0 0 8px var(--warning);
+  position: relative;
+}
+
+.status-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 10px var(--success);
+  animation: pulse 1.8s infinite;
+}
+
+.status-dot.offline {
+  background: var(--danger);
+  box-shadow: 0 0 10px var(--danger);
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 14px var(--success); }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+/* Controls & Upload */
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  font-family: var(--font-mono);
+}
+
+.drop-zone {
+  border: 1.5px dashed var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.01);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.drop-zone:hover, .drop-zone.drag {
+  border-color: var(--primary);
+  background: rgba(14, 165, 233, 0.04);
+  transform: translateY(-2px);
+}
+
+.drop-zone input[type=file] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  transition: all 0.3s;
+}
+
+.drop-zone:hover .upload-icon {
+  color: #fff;
+  background: var(--primary-gradient);
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+}
+
+.upload-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.drop-txt strong {
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: block;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.drop-txt small {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.file-chosen {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.75rem;
+  word-break: break-all;
+  text-align: left;
+}
+
+/* Threshold Panel */
+.thresh-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.thresh-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.thresh-input-row input[type=number] {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.thresh-input-row input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.15);
+}
+
+.thresh-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  margin: 0.5rem 0;
+}
+
+.thresh-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--primary);
+  transition: transform 0.2s;
+}
+
+.thresh-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.presets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+.preset-btn {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 0.4rem 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-muted-light);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.preset-btn:hover, .preset-btn.active {
+  border-color: var(--primary);
+  color: #fff;
+  background: rgba(14, 165, 233, 0.12);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.1);
+}
+
+/* Action Button */
+.run-btn {
+  width: 100%;
+  height: 48px;
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.run-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(14, 165, 233, 0.35);
+}
+
+.run-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.run-btn .spin {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Dashboard Welcomer */
+.welcome-deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6rem 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--glass-border);
+  background: rgba(10, 9, 18, 0.2);
+  height: 100%;
+}
+
+.welcome-illus {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.welcome-icon {
+  width: 90px;
+  height: 90px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+.welcome-pulse {
+  position: absolute;
+  inset: -10px;
+  border: 1.5px solid var(--primary);
+  border-radius: 32px;
+  opacity: 0.15;
+  animation: echo 2.5s infinite linear;
+}
+
+@keyframes echo {
+  0% { transform: scale(0.9); opacity: 0.3; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+
+.welcome-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted-light);
+  max-width: 480px;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.welcome-steps {
+  display: flex;
+  gap: 1.5rem;
+  text-align: left;
+  max-width: 700px;
+}
+
+.welcome-step {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.step-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.step-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Results Deck */
+#results {
+  display: none;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.stat-glow {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: var(--primary);
+  opacity: 0.05;
+  filter: blur(30px);
+  right: -20px;
+  bottom: -20px;
+  border-radius: 50%;
+}
+
+.stat-lbl {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.stat-val {
+  font-family: var(--font-mono);
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Worst Path Highlight */
+.deepest-card {
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  background: linear-gradient(95deg, rgba(14, 165, 233, 0.04), transparent);
+}
+
+.deepest-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.deepest-lbl {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.deepest-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.deepest-badge.safe { background: rgba(16, 185, 129, 0.12); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+.deepest-badge.warn { background: rgba(245, 158, 11, 0.12); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+.deepest-badge.danger { background: rgba(244, 63, 94, 0.12); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.2); }
+
+/* SVG Flow Diagram */
+.call-flow-diagram {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 96px;
+}
+
+.flow-node {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  min-width: 140px;
+  transition: all 0.3s;
+}
+
+.flow-node:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.flow-node.fixed {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.flow-node-name {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flow-node-size {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flow-node-size .was-size {
+  text-decoration: line-through;
+  color: var(--danger);
+  margin-right: 4px;
+}
+
+.flow-node-size .now-size {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.flow-arrow-svg {
+  width: 32px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.flow-arrow-svg.pulse {
+  color: var(--danger);
+  animation: linePulse 2s infinite;
+}
+
+@keyframes linePulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; filter: drop-shadow(0 0 2px var(--danger)); }
+  100% { opacity: 0.5; }
+}
+
+.deepest-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-muted-light);
+}
+
+.deepest-chain-title {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.deepest-headroom {
+  font-weight: 600;
+}
+
+/* Alert Strategy Deck */
+.alert-wrapper {
+  margin-bottom: 2rem;
+}
+
+.alert-card {
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.alert-card.danger {
+  background: rgba(244, 63, 94, 0.05);
+  border-color: rgba(244, 63, 94, 0.2);
+}
+
+.alert-card.success {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.alert-hdr {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.alert-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.alert-card.danger .alert-icon {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--danger);
+}
+
+.alert-card.success .alert-icon {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+
+.alert-details strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.alert-card.danger .alert-details strong { color: var(--danger); }
+.alert-card.success .alert-details strong { color: var(--success); }
+
+.alert-details p {
+  font-size: 0.85rem;
+  color: var(--text-muted-light);
+}
+
+/* Sandbox Simulation Console */
+.sandbox-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sandbox-hdr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sandbox-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted-light);
+  letter-spacing: 1px;
+  font-family: var(--font-mono);
+}
+
+.sandbox-strategies {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.strat-card {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.strat-card:hover {
+  border-color: var(--primary);
+  background: rgba(14, 165, 233, 0.03);
+  transform: translateY(-2px);
+}
+
+.strat-card.active {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.05);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+.strat-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.strat-icon {
+  font-size: 1.25rem;
+}
+
+.strat-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.strat-card.active .strat-title {
+  color: var(--success);
+}
+
+.strat-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted-light);
+  line-height: 1.4;
+}
+
+.strat-savings {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--success);
+  margin-top: auto;
+}
+
+/* Heap Customizer Slider Panel inside sandbox */
+.heap-slider-panel {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.heap-slider-hdr {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.heap-slider-lbl {
+  color: var(--text-muted-light);
+}
+
+.heap-slider-val {
+  font-family: var(--font-mono);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Changes Feed */
+.changes-panel {
+  background: rgba(16, 185, 129, 0.02);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  display: none;
+}
+
+.changes-hdr {
+  padding: 0.85rem 1.25rem;
+  background: rgba(16, 185, 129, 0.05);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--success);
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.change-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 0.3fr 1fr 2.5fr;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--glass-border);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  align-items: center;
+}
+
+.change-row:last-child {
+  border-bottom: none;
+}
+
+.change-fn { color: var(--primary); font-weight: 700; }
+.change-before { color: var(--danger); text-align: right; }
+.change-arrow { color: var(--text-muted); text-align: center; }
+.change-after { color: var(--success); font-weight: 700; text-align: left; }
+.change-reason { color: var(--text-muted-light); font-family: var(--font-sans); font-size: 0.75rem; margin-left: 1rem; }
+
+/* Applied Banner */
+.applied-banner {
+  background: rgba(16, 185, 129, 0.07);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.applied-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.applied-tag {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+}
+
+.applied-lbl {
+  color: var(--text-muted-light);
+}
+
+.applied-lbl strong {
+  color: var(--text-main);
+}
+
+.reset-btn {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted-light);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reset-btn:hover {
+  background: rgba(244, 63, 94, 0.1);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* Charts Panel */
+.chart-panel {
+  padding: 1.75rem 2rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+}
+
+.chart-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.chart-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-muted-light);
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* Detailed Chains list */
+.chains-panel {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.panel-title-bar {
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-title-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.panel-title-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.chain-item {
+  border-bottom: 1px solid var(--glass-border);
+  transition: background 0.2s;
+}
+
+.chain-item:last-child {
+  border-bottom: none;
+}
+
+.chain-summary {
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chain-summary:hover {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.chain-rank-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  margin-right: 1rem;
+}
+
+.chain-depth-lbl {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-right: 1rem;
+}
+
+.chain-depth-lbl.safe { color: var(--success); }
+.chain-depth-lbl.warn { color: var(--warning); }
+.chain-depth-lbl.danger { color: var(--danger); }
+
+.chain-nodes-preview {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  margin-right: 1.5rem;
+}
+
+.chain-chev {
+  color: var(--text-muted);
+  transition: transform 0.3s;
+}
+
+.chain-item.open .chain-chev {
+  transform: rotate(180deg);
+}
+
+.chain-details {
+  display: none;
+  padding: 1.5rem 2rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid var(--glass-border);
+  animation: slideDown 0.3s ease-out;
+}
+
+.chain-item.open .chain-details {
+  display: block;
+}
+
+.chain-reco-box {
+  background: rgba(14, 165, 233, 0.03);
+  border: 1px solid rgba(14, 165, 233, 0.15);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.reco-icon {
+  font-size: 1.15rem;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.reco-details strong {
+  display: block;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.reco-details p {
+  color: var(--text-muted-light);
+  line-height: 1.45;
+}
+
+/* Two Column heatmaps and code viewers */
+.dashboard-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.heatmap-panel {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.heatmap-search-bar {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,255,255,0.01);
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.heatmap-list {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.heatmap-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.heatmap-row:last-child {
+  border-bottom: none;
+}
+
+.heatmap-row:hover, .heatmap-row.selected {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.heatmap-row.selected {
+  border-left: 3px solid var(--primary);
+  padding-left: calc(1.5rem - 3px);
+}
+
+.heatmap-fn {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heatmap-bar-track {
+  width: 90px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 3px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.heatmap-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--primary-gradient);
+  transition: width 0.5s;
+}
+
+.heatmap-size {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted-light);
+  width: 54px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Dynamic LLVM IR Viewer Pane */
+.code-viewer-panel {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #050409;
+}
+
+.code-viewer-hdr {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.code-title {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted-light);
+}
+
+.code-body {
+  padding: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  color: #a5b4fc;
+  background: #040307;
+  flex: 1;
+  min-height: 380px;
+}
+
+.code-line {
+  display: block;
+}
+
+.code-comment { color: #475569; }
+.code-keyword { color: #f43f5e; font-weight: 700; }
+.code-symbol { color: #38bdf8; }
+.code-var { color: #fb7185; }
+.code-val { color: #fbbf24; }
+.code-type { color: #a78bfa; }
+
+.code-tip-box {
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid var(--glass-border);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-muted-light);
+}
+
+/* Exporter Bar */
+.exporter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 2rem;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+
+.exporter-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.exporter-lbl {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.exporter-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.exporter-btns {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.export-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.export-btn:hover {
+  background: var(--primary-gradient);
+  border-color: var(--primary);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+}
+
+.error-banner {
+  display: none;
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.75rem;
+  margin-bottom: 2rem;
+  color: var(--danger);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.error-banner strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+/* Responsiveness overrides */
+@media (max-width: 1024px) {
+  body {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1.5rem;
+  }
+  .container {
+    padding: 1.5rem;
+  }
+  .dashboard-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sandbox-strategies {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-box">AS</div>
+    <div class="logo-details">
+      <span class="logo-title">AeroStack</span>
+      <span class="logo-sub">Compile-Time Suite</span>
+    </div>
+  </div>
+
+  <div class="sentinel">
+    <span class="sentinel-lbl">Analysis Hub</span>
+    <div class="sentinel-status">
+      <div class="status-dot" id="sentinelDot"></div>
+      <span id="sentinelLbl">OFFLINE</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <span class="section-label">Source Module</span>
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".bc,.ll">
+      <div class="upload-icon">
+        <svg viewBox="0 0 24 24"><path d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 1 1 15.9 6L16 6a5 5 0 0 1 1 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="drop-txt">
+        <strong>Upload Bitcode</strong>
+        <small>Drop .bc file or browse</small>
+      </div>
+      <div class="file-chosen" id="fileChosen">
+        <span>✓</span>
+        <span id="fileName" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <span class="section-label">Target Ceiling</span>
+    <div class="thresh-box">
+      <div class="thresh-input-row">
+        <input type="number" id="threshold" value="4096" min="1">
+        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">BYTES</span>
+      </div>
+      <input type="range" id="threshSlider" class="thresh-slider" min="128" max="16384" step="128" value="4096">
+      <div class="presets">
+        <button class="preset-btn" data-val="512">512B</button>
+        <button class="preset-btn" data-val="1024">1KB</button>
+        <button class="preset-btn" data-val="2048">2KB</button>
+        <button class="preset-btn" data-val="4096" class="active">4KB</button>
+        <button class="preset-btn" data-val="8192">8KB</button>
+        <button class="preset-btn" data-val="16384">16KB</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="run-btn" id="runBtn" onclick="runAnalysis()">
+    <div class="spin" id="spinner"></div>
+    <span id="btnLbl">▶ &nbsp;RUN ANALYSIS</span>
+  </button>
+</aside>
+
+<div class="main-layout">
+  <header class="topbar">
+    <div class="topbar-title">Static Stack Usage &amp; Call Flow Diagnostics</div>
+    <div class="topbar-meta">
+      <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted-light); background:rgba(255,255,255,0.02); padding:0.35rem 0.75rem; border:1px solid var(--glass-border); border-radius:12px;">LLVM-17 IR Target</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="error-banner" id="errBox"></div>
+
+    <div class="welcome-deck" id="welcomeScreen">
+      <div class="welcome-illus">
+        <div class="welcome-pulse"></div>
+        <div class="welcome-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="22.08" x2="12" y2="12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <h2 class="welcome-title">AeroStack IR Diagnostic Deck</h2>
+      <p class="welcome-desc">Analyze compiled static binaries at the LLVM IR intermediate level. Safely estimate cumulative worst-case stack depths and detect overflow vulnerabilities prior to hardware deployment.</p>
+      
+      <div class="welcome-steps">
+        <div class="welcome-step">
+          <div class="step-num">01</div>
+          <div class="step-title">Compile to Bitcode</div>
+          <div class="step-desc"><code>clang -O0 -emit-llvm -c main.c -o main.bc</code></div>
+        </div>
+        <div class="welcome-step">
+          <div class="step-num">02</div>
+          <div class="step-title">Load Target Module</div>
+          <div class="step-desc">Select or drop your compiled <code>.bc</code> LLVM file into the Control Deck.</div>
+        </div>
+        <div class="welcome-step">
+          <div class="step-num">03</div>
+          <div class="step-title">Run Diagnostic</div>
+          <div class="step-desc">Establish memory ceiling parameters, click Run Analysis and review diagnostics.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="results">
+      <!-- Dynamic results are injected here by render() -->
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let selFile = null;
+let chartInst = null;
+let origData = null;
+let activeStrategy = null;
+let heapLimit = 64; // Default allocation size limit to heap allocate
+
+// Active file tracking
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', e => { if (e.target.files[0]) pick(e.target.files[0]); });
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag'); if (e.dataTransfer.files[0]) pick(e.dataTransfer.files[0]); });
+
+function pick(f) {
+  selFile = f;
+  document.getElementById('fileName').textContent = f.name;
+  document.getElementById('fileChosen').style.display = 'inline-flex';
+  document.querySelector('.drop-txt').style.display = 'none';
+  document.querySelector('.upload-icon').style.display = 'none';
+}
+
+// Threshold UI handling
+const thresholdInput = document.getElementById('threshold');
+const thresholdSlider = document.getElementById('threshSlider');
+const presetBtns = document.querySelectorAll('.preset-btn');
+
+function syncThreshold(val) {
+  thresholdInput.value = val;
+  thresholdSlider.value = val;
+  
+  presetBtns.forEach(btn => {
+    if (parseInt(btn.getAttribute('data-val')) === parseInt(val)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // If data is already analyzed, dynamically re-calculate risks on the fly!
+  if (origData) {
+    let currentData = JSON.parse(JSON.stringify(origData));
+    currentData.threshold = parseInt(val);
+    
+    // Recalculate overflows based on new threshold
+    currentData.overflow_risks = [];
+    currentData.chains.forEach(c => {
+      if (c.depth > currentData.threshold) {
+        currentData.overflow_risks.push({ function: c.steps[0]?.name || '?', depth: c.depth, threshold: currentData.threshold });
+      }
+    });
+
+    if (activeStrategy) {
+      applyStrategy(activeStrategy, currentData);
+    } else {
+      render(currentData, null);
+    }
+  }
+}
+
+thresholdInput.addEventListener('input', e => syncThreshold(e.target.value || 4096));
+thresholdSlider.addEventListener('input', e => syncThreshold(e.target.value));
+presetBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    syncThreshold(btn.getAttribute('data-val'));
+  });
+});
+
+// Format units helper
+function fmt(b) {
+  if (b >= 1048576) return (b/1048576).toFixed(1)+' MB';
+  if (b >= 1024) return (b/1024).toFixed(1)+' KB';
+  return b+' B';
+}
+
+// Risk color coding helper
+function cls(depth, threshold) {
+  if (depth > threshold) return 'danger';
+  if (depth > threshold * 0.75) return 'warn';
+  return 'safe';
+}
+
+// Active Backend Server Sentinel Ping
+async function checkServer() {
+  const dot = document.getElementById('sentinelDot');
+  const lbl = document.getElementById('sentinelLbl');
+  try {
+    const res = await fetch('http://localhost:8765/', { method: 'GET', mode: 'cors' });
+    dot.className = 'status-dot online';
+    lbl.textContent = 'ONLINE';
+  } catch (err) {
+    // A fetch failure might still indicate the port is active, but check status is best effort
+    dot.className = 'status-dot offline';
+    lbl.textContent = 'OFFLINE';
+  }
+}
+setInterval(checkServer, 5000);
+checkServer();
+
+// Analyze Core Call
+async function runAnalysis() {
+  if (!selFile) { alert('Please choose or drop an LLVM bitcode (.bc) file first.'); return; }
+  const btn = document.getElementById('runBtn');
+  const lbl = document.getElementById('btnLbl');
+  const sp = document.getElementById('spinner');
+  const eb = document.getElementById('errBox');
+  
+  btn.disabled = true; 
+  lbl.style.display = 'none'; 
+  sp.style.display = 'block'; 
+  eb.style.display = 'none';
+  activeStrategy = null;
+
+  const fd = new FormData();
+  fd.append('bcfile', selFile);
+  fd.append('threshold', thresholdInput.value);
+
+  try {
+    const r = await fetch('http://localhost:8765/analyze', { method: 'POST', body: fd });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    
+    // Store globally
+    origData = JSON.parse(JSON.stringify(d));
+    document.getElementById('welcomeScreen').style.display = 'none';
+    render(d, null);
+  } catch(e) {
+    eb.style.display = 'block';
+    eb.innerHTML = `<strong>Diagnostic Pipeline Failure</strong>
+      Error triggering compiler pass: ${e.message}<br>
+      <span style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem; display:block;">Troubleshooting: Ensure the backend <code>server.py</code> is running, and compiled <code>stack-analyzer</code> binary resides in your build directory.</span>`;
+  } finally {
+    btn.disabled = false; 
+    lbl.style.display = 'inline'; 
+    sp.style.display = 'none';
+  }
+}
+
+// Strategy Simulators
+function applyStrategy(strategyId, customBaseData = null) {
+  if (!origData) return;
+  activeStrategy = strategyId;
+  
+  const base = customBaseData || JSON.parse(JSON.stringify(origData));
+  const T = base.threshold;
+  let changes = [];
+
+  if (strategyId === 'heap') {
+    // Dynamic stack-to-heap redirection based on heapLimit slider threshold
+    base.functions.forEach(f => {
+      if (f.size > heapLimit) {
+        changes.push({ fn: f.name, before: f.size, after: 8, reason: 'Redirected to heap via malloc() allocation' });
+        f.size = 8; // pointer replacement
+      }
+    });
+    recomputeChains(base);
+    
+  } else if (strategyId === 'break') {
+    // Async thread delegation / task split (remove deepest functions in overflowing chains)
+    const overChains = base.chains.filter(c => c.depth > T);
+    const leafNames = new Set();
+    overChains.forEach(c => {
+      if (c.steps && c.steps.length > 0) {
+        leafNames.add(c.steps[c.steps.length - 1].name);
+      }
+    });
+    leafNames.forEach(name => {
+      const f = base.functions.find(f => f.name === name);
+      if (f) {
+        changes.push({ fn: f.name, before: f.size, after: 0, reason: 'Delegated as an asynchronous task' });
+        f.size = 0;
+        base.chains.forEach(c => {
+          c.steps = c.steps.filter(s => s.name !== name);
+        });
+      }
+    });
+    recomputeChains(base);
+
+  } else if (strategyId === 'threshold') {
+    // Suggest safe allocation size
+    const maxDepth = Math.max(...base.chains.map(c => c.depth));
+    const newT = Math.ceil(maxDepth * 1.15); // safe + 15% headroom
+    changes.push({ fn: 'memory_threshold', before: T, after: newT, reason: 'Calculated optimal threshold + 15% headroom margin' });
+    base.threshold = newT;
+  }
+
+  // Refresh overflow logs
+  base.overflow_risks = [];
+  base.chains.forEach(c => {
+    if (c.depth > base.threshold) {
+      base.overflow_risks.push({ function: c.steps[0]?.name || '?', depth: c.depth, threshold: base.threshold });
+    }
+  });
+
+  render(base, { strategy: strategyId, changes });
+}
+
+function recomputeChains(data) {
+  const fsMap = {};
+  data.functions.forEach(f => { fsMap[f.name] = f.size; });
+
+  data.chains.forEach(c => {
+    let total = 0;
+    c.steps.forEach(s => {
+      s.size = fsMap[s.name] !== undefined ? fsMap[s.name] : s.size;
+      total += s.size;
+    });
+    c.depth = total;
+  });
+
+  data.chains.sort((a, b) => b.depth - a.depth);
+  data.chains.forEach((c, i) => { c.rank = i + 1; });
+}
+
+function strategyInfo(id, data) {
+  const T = data.threshold;
+  if (id === 'heap') {
+    const big = data.functions.filter(f => f.size > heapLimit);
+    const saving = big.reduce((s, f) => s + f.size - 8, 0);
+    return {
+      icon: '📦',
+      title: `Heap Migration Pool (> ${heapLimit}B)`,
+      desc: `Simulate heap-allocating local buffers larger than ${heapLimit} bytes. Reduces frame overhead to a pointer (8B).`,
+      saving: `Est: ${fmt(saving)} saved across ${big.length} modules`
+    };
+  }
+  if (id === 'break') {
+    const overChains = data.chains.filter(c => c.depth > T);
+    const leafNames = new Set(overChains.map(c => c.steps.length ? c.steps[c.steps.length-1].name : ''));
+    return {
+      icon: '⚡',
+      title: 'Async Thread Split',
+      desc: 'Simulate spawning the deepest functions as asynchronous tasks or callbacks to limit calling stack thread depth.',
+      saving: `Unchains ${leafNames.size} modules from calls`
+    };
+  }
+  if (id === 'threshold') {
+    const maxDepth = Math.max(...data.chains.map(c => c.depth));
+    const newT = Math.ceil(maxDepth * 1.15);
+    return {
+      icon: '🛡️',
+      title: 'Optimal Frame Allocation',
+      desc: 'No compiler changes required. Broaden target stack frame boundary to accommodate worst-case scenarios + 15% headroom.',
+      saving: `Increase boundary to ${fmt(newT)}`
+    };
+  }
+}
+
+// Generate realistic LLVM IR Assembly for high-tech visualization
+function getMockIR(name, size) {
+  return `<span class="code-comment">; ModuleID = '${name}.c'</span>
+<span class="code-comment">; Target static stack estimation: ${size} bytes</span>
+<span class="code-keyword">define</span> <span class="code-type">i32</span> <span class="code-symbol">@</span><span class="code-var">${name}</span>() <span class="code-symbol">#0</span> {
+  <span class="code-comment">; stack-frame alloca entry</span>
+  <span class="code-var">%1</span> <span class="code-symbol">=</span> <span class="code-keyword">alloca</span> <span class="code-symbol">[</span><span class="code-val">${size}</span> <span class="code-symbol">x</span> <span class="code-type">i8</span><span class="code-symbol">]</span>, <span class="code-keyword">align</span> <span class="code-val">16</span>
+  <span class="code-var">%2</span> <span class="code-symbol">=</span> <span class="code-keyword">alloca</span> <span class="code-type">i32</span>, <span class="code-keyword">align</span> <span class="code-val">4</span>
+  <span class="code-keyword">store</span> <span class="code-type">i32</span> <span class="code-val">0</span>, <span class="code-type">i32*</span> <span class="code-var">%2</span>, <span class="code-keyword">align</span> <span class="code-val">4</span>
+  
+  <span class="code-comment">; buffer references &amp; alignments</span>
+  <span class="code-var">%3</span> <span class="code-symbol">=</span> <span class="code-keyword">getelementptr</span> <span class="code-keyword">inbounds</span> <span class="code-symbol">[</span><span class="code-val">${size}</span> <span class="code-symbol">x</span> <span class="code-type">i8</span><span class="code-symbol">]</span>, <span class="code-symbol">[</span><span class="code-val">${size}</span> <span class="code-symbol">x</span> <span class="code-type">i8</span><span class="code-symbol">]</span>* <span class="code-var">%1</span>, <span class="code-type">i32</span> <span class="code-val">0</span>, <span class="code-type">i32</span> <span class="code-val">0</span>
+  <span class="code-keyword">call</span> <span class="code-type">void</span> <span class="code-symbol">@</span><span class="code-var">llvm.memset.p0i8.i64</span>(<span class="code-type">i8*</span> <span class="code-var">%3</span>, <span class="code-type">i8</span> <span class="code-val">0</span>, <span class="code-type">i64</span> <span class="code-val">${size}</span>, <span class="code-type">i1</span> <span class="code-val">false</span>)
+  
+  <span class="code-comment">; execute static module instructions</span>
+  <span class="code-var">%4</span> <span class="code-symbol">=</span> <span class="code-keyword">load</span> <span class="code-type">i32</span>, <span class="code-type">i32*</span> <span class="code-var">%2</span>, <span class="code-keyword">align</span> <span class="code-val">4</span>
+  <span class="code-keyword">ret</span> <span class="code-type">i32</span> <span class="code-var">%4</span>
+}`;
+}
+
+function getMockTip(name, size) {
+  if (size > 1024) {
+    return \`<strong>Vulnerability Warning:</strong> <code>\${name}</code> has a substantial static footprint (\${size}B). Spawning multiple thread instances of this module concurrently will rapidly trigger stack exhaustion. <em>Recommendation: Migrate local buffer to dynamic heap pointer (malloc).</em>\`;
+  } else if (size > 256) {
+    return \`<strong>Performance Note:</strong> Static footprint for <code>\${name}</code> is moderately high (\${size}B). Avoid calling this within nested loops or nested interrupt service routines (ISRs).\`;
+  }
+  return \`<strong>Optimized State:</strong> <code>\${name}</code> maintains a safe stack footprint (\${size}B). Standard frame registers are well within normal operating parameters.\`;
+}
+
+// Global toggle for chains accordion
+function toggleAccordion(el) {
+  el.closest('.chain-item').classList.toggle('open');
+}
+
+// Export functions
+function exportMarkdown() {
+  if (!origData) return;
+  const T = origData.threshold;
+  let md = \`# AeroStack Compile-Time Diagnostic Report\\n\\n\`;
+  md += \`## Static Analysis Specifications\\n\`;
+  md += \`- Threshold Boundary Limit: \${T} Bytes\\n\`;
+  md += \`- Total Functions Analyzed: \${origData.functions.length}\\n\`;
+  md += \`- Worst-Case Stack Depth: \${origData.chains[0]?.depth || 0} Bytes\\n\`;
+  md += \`- Identified Overflow Risk Points: \${origData.overflow_risks.length}\\n\\n\`;
+  
+  md += \`## Deepest Call Chains Graph\\n\`;
+  origData.chains.slice(0, 10).forEach(c => {
+    md += \`### Rank #\${c.rank} — Depth: \${c.depth} Bytes (\${c.depth > T ? 'OVERFLOW WARNING' : 'SAFE'})\\n\`;
+    md += \`\\\`\${c.steps.map(s=>\`\${s.name}(\${s.size}B)\`).join(' -> ')}\\\`\\n\\n\`;
+  });
+  
+  md += \`## Static Function Allocations Heatmap\\n\`;
+  md += \`| Rank | Function | Frame Size | Security Level |\\n\`;
+  md += \`|---|---|---|---|\\n\`;
+  origData.functions.forEach((f, idx) => {
+    md += \`| #\${idx+1} | \\\`\${f.name}\\\` | \${f.size} Bytes | \${f.size > 256 ? 'HIGH OVERHEAD' : 'SAFE'} |\\n\`;
+  });
+
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = \`AeroStack_Diagnostic_Report.md\`;
+  a.click();
+}
+
+function exportTXT() {
+  if (!origData) return;
+  const T = origData.threshold;
+  let txt = \`==================================================\\n\`;
+  txt += \`       AEROSTACK STATIC DIAGNOSTIC REPORT         \\n\`;
+  txt += \`==================================================\\n\\n\`;
+  txt += \`SPECIFICATIONS:\\n\`;
+  txt += \`- Threshold Limit: \${T} Bytes\\n\`;
+  txt += \`- Total Functions: \${origData.functions.length}\\n\`;
+  txt += \`- Deepest Path:    \${origData.chains[0]?.depth || 0} Bytes\\n\`;
+  txt += \`- Active Risks:    \${origData.overflow_risks.length}\\n\\n\`;
+  
+  txt += \`TOP DEPTH CALL CHAINS:\\n\`;
+  origData.chains.forEach(c => {
+    txt += \`#\${c.rank} [\${c.depth} B] \${c.depth > T ? '[OVERFLOW]' : '[SAFE]'}\\n\`;
+    txt += \`  Path: \${c.steps.map(s=>\`\${s.name}(\${s.size}B)\`).join(' -> ')}\\n\\n\`;
+  });
+
+  const blob = new Blob([txt], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = \`AeroStack_Report.txt\`;
+  a.click();
+}
+
+// CORE RENDER
+function render(data, fix) {
+  const el = document.getElementById('results');
+  el.style.display = 'block';
+  
+  const T = data.threshold;
+  const best = data.chains[0];
+  const risks = data.overflow_risks.length;
+  const maxFn = data.functions.length ? Math.max(...data.functions.map(f=>f.size)) : 1;
+  const isFixed = fix !== null;
+
+  // Sandbox specs from initial snapshot
+  const s1 = strategyInfo('heap', origData);
+  const s2 = strategyInfo('break', origData);
+  const s3 = strategyInfo('threshold', origData);
+
+  // Deepest chain visualization mapping
+  let flowDiagramHtml = '';
+  if (best && best.steps) {
+    flowDiagramHtml = best.steps.map((s, idx) => {
+      // check if this function is modified in simulation
+      let isSimulated = false;
+      let prevSize = s.size;
+      let nowSize = s.size;
+      
+      if (fix && fix.changes) {
+        const matchingChange = fix.changes.find(ch => ch.fn === s.name);
+        if (matchingChange) {
+          isSimulated = true;
+          prevSize = matchingChange.before;
+          nowSize = matchingChange.after;
+        }
+      }
+
+      const sizeDisplay = isSimulated
+        ? \`<span class="was-size">\${prevSize}B</span><span class="now-size">\${nowSize}B</span>\`
+        : \`<span>\${s.size} B</span>\`;
+
+      const nodeHtml = \`<div class="flow-node \${isSimulated?'fixed':''}">
+        <span class="flow-node-name" title="\${s.name}">\${s.name}</span>
+        <div class="flow-node-size">\${sizeDisplay}</div>
+      </div>\`;
+      
+      const arrowHtml = idx < best.steps.length - 1
+        ? \`<svg class="flow-arrow-svg \${best.depth > T ? 'pulse' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>\`
+        : '';
+        
+      return nodeHtml + arrowHtml;
+    }).join('');
+  }
+
+  // Alerts visual layout
+  let alertSectionHtml = '';
+  if (origData.overflow_risks.length > 0) {
+    if (risks === 0) {
+      alertSectionHtml = \`<div class="alert-card success">
+        <div class="alert-hdr">
+          <div class="alert-icon">✓</div>
+          <div class="alert-details">
+            <strong>Static Footprint Fully Optimized</strong>
+            <p>All structural frame overflow risks have been mitigated under the \${fmt(T)} boundary limit.</p>
+          </div>
+        </div>
+      </div>\`;
+    } else {
+      const activeBtns = ['heap','break','threshold'].map(id => {
+        const strat = id === 'heap' ? s1 : id === 'break' ? s2 : s3;
+        const isActive = activeStrategy === id;
+        return \`<button class="strat-card \${isActive?'active':''}" onclick="applyStrategy('\${id}')">
+          <div class="strat-hdr">
+            <span class="strat-title">\${strat.title}</span>
+            <span class="strat-icon">\${strat.icon}</span>
+          </div>
+          <p class="strat-desc">\${strat.desc}</p>
+          <span class="strat-savings">\${strat.saving}</span>
+        </button>\`;
+      }).join('');
+
+      alertSectionHtml = \`<div class="alert-card danger">
+        <div class="alert-hdr">
+          <div class="alert-icon">⚠</div>
+          <div class="alert-details">
+            <strong>\${risks} Calling Pipeline Overflow Risk\${risks>1?'s':''} Detected</strong>
+            <p>Static call paths leading through <code>\${origData.overflow_risks.map(r=>r.function).join(', ')}</code> violate your target ceiling allocation (\${fmt(origData.threshold)}).</p>
+          </div>
+        </div>
+        
+        <div class="sandbox-deck">
+          <div class="sandbox-hdr-row">
+            <span class="sandbox-title">AeroStack Optimization Sandbox</span>
+            \${activeStrategy ? \`<button class="reset-btn" onclick="render(origData, null); activeStrategy=null;">↺ Reset Sandbox</button>\` : ''}
+          </div>
+          <div class="sandbox-strategies">
+            \${activeBtns}
+          </div>
+          
+          <div class="heap-slider-panel" id="heapSliderDeck">
+            <div class="heap-slider-hdr">
+              <span class="heap-slider-lbl">Simulate Buffer Stack-to-Heap Conversion:</span>
+              <span class="heap-slider-val">&gt; \${heapLimit} Bytes</span>
+            </div>
+            <input type="range" class="thresh-slider" min="16" max="512" step="16" value="\${heapLimit}" id="heapLimitRange">
+            <span style="font-size:0.7rem; color:var(--text-muted); line-height:1.3; display:block;">Converting local stack buffers larger than this limit to dynamic heap allocations reduces frame size overhead to a single pointer allocation.</span>
+          </div>
+        </div>
+      </div>\`;
+    }
+  }
+
+  // Changes applied table
+  let changesHtml = '';
+  if (fix && fix.changes && fix.changes.length > 0) {
+    const changeRows = fix.changes.map(ch => {
+      if (ch.fn === 'memory_threshold') {
+        return \`<div class="change-row">
+          <span class="change-fn">Limit Configuration</span>
+          <span class="change-before">\${fmt(ch.before)}</span>
+          <span class="change-arrow">&rarr;</span>
+          <span class="change-after">\${fmt(ch.after)}</span>
+          <span class="change-reason">\${ch.reason}</span>
+        </div>\`;
+      }
+      return \`<div class="change-row">
+        <span class="change-fn">\${ch.fn}</span>
+        <span class="change-before">\${ch.before}B</span>
+        <span class="change-arrow">&rarr;</span>
+        <span class="change-after">\${ch.after === 0 ? 'Delegated' : ch.after+'B'}</span>
+        <span class="change-reason">\${ch.reason}</span>
+      </div>\`;
+    }).join('');
+
+    changesHtml = \`<div class="changes-panel show">
+      <div class="changes-hdr">✓ &nbsp;Optimization Simulation Feed — \${fix.changes.length} change\${fix.changes.length!==1?'s':''} applied</div>
+      \${changeRows}
+    </div>\`;
+  }
+
+  // Interactive accordions of all chains
+  const chainsAccordionHtml = data.chains.map(c => {
+    const isOver = c.depth > T;
+    const rc = cls(c.depth, T);
+    
+    // Build steps flow nodes in details
+    const detailNodes = c.steps.map((s, idx) => {
+      let isSimulated = false;
+      let prevSize = s.size;
+      let nowSize = s.size;
+      if (fix && fix.changes) {
+        const matchingChange = fix.changes.find(ch => ch.fn === s.name);
+        if (matchingChange) {
+          isSimulated = true;
+          prevSize = matchingChange.before;
+          nowSize = matchingChange.after;
+        }
+      }
+      const sizeTag = isSimulated 
+        ? \`<span class="was-size">\${prevSize}B</span><span class="now-size">\${nowSize}B</span>\`
+        : \`<span>\${s.size}B</span>\`;
+
+      return \`<div class="flow-node \${isSimulated?'fixed':''}">
+        <span class="flow-node-name" title="\${s.name}">\${s.name}</span>
+        <div class="flow-node-size">\${sizeTag}</div>
+      </div>\` + (idx < c.steps.length - 1 ? '<span style="color:var(--text-muted); font-size:1.2rem;">&rarr;</span>' : '');
+    }).join('');
+
+    return \`<div class="chain-item">
+      <div class="chain-summary" onclick="toggleAccordion(this)">
+        <span class="chain-rank-lbl">#\${c.rank}</span>
+        <span class="chain-depth-lbl \${rc}">\${fmt(c.depth)}</span>
+        <span class="chain-nodes-preview">\${c.steps.map(s=>s.name).join(' &rarr; ')}</span>
+        <span class="deepest-badge \${rc}" style="margin-right: 1.5rem;">\${isOver?'OVERFLOW':'SAFE'}</span>
+        <svg class="chain-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div class="chain-details">
+        <div style="display:flex; align-items:center; gap:0.75rem; overflow-x:auto; padding: 1rem 0; margin-bottom: 0.5rem;">
+          \${detailNodes}
+        </div>
+        <div class="chain-reco-box">
+          <div class="reco-icon">ℹ</div>
+          <div class="reco-details">
+            <strong>Worst-Case Calling Path Analytics</strong>
+            <p>Path consists of \${c.steps.length} sequential stack operations, accumulating a cumulative static footprint of \${c.depth} bytes. Spawning concurrent processes through this pathway is unsafe without raising the target stack budget parameter by \${c.depth > T ? fmt(c.depth - T) : '0 bytes'}.</p>
+          </div>
+        </div>
+      </div>
+    </div>\`;
+  }).join('');
+
+  // Inject into index
+  el.innerHTML = \`
+    \${fix ? \`<div class="applied-banner show">
+      <div class="applied-left">
+        <span class="applied-tag">ACTIVE SIMULATION</span>
+        <span class="applied-lbl">Applying: <strong>\${fix.strategy === 'heap' ? \`Heap allocation Conversion (&gt; \${heapLimit}B)\` : fix.strategy === 'break' ? 'Async Thread Split' : 'Celiling Allocation Increase'}</strong></span>
+      </div>
+      <button class="reset-btn" onclick="render(origData, null); activeStrategy=null;">↺ Reset Simulation</button>
+    </div>\` : ''}
+
+    <div class="stats-grid">
+      <div class="stat-card glass">
+        <div class="stat-glow" style="background:var(--primary)"></div>
+        <span class="stat-lbl">Parsed Functions</span>
+        <div class="stat-val" style="color:var(--primary)">\${data.functions.length}</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-glow" style="background:var(--accent)"></div>
+        <span class="stat-lbl">Worst Stack Path</span>
+        <div class="stat-val" style="color:\${cls(best?best.depth:0, T) === 'danger' ? 'var(--danger)' : cls(best?best.depth:0, T) === 'warn' ? 'var(--warning)' : 'var(--success)'}">\${best?fmt(best.depth):'—'}</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-glow" style="background:var(--text-muted)"></div>
+        <span class="stat-lbl">Target Limit</span>
+        <div class="stat-val" style="color:var(--text-main)">\${fmt(T)}</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-glow" style="background:var(--danger)"></div>
+        <span class="stat-lbl">Overflow Risks</span>
+        <div class="stat-val" style="color:\${risks > 0 ? 'var(--danger)' : 'var(--success)'}">\${risks}</div>
+      </div>
+    </div>
+
+    <div class="deepest-card glass">
+      <div class="deepest-hdr">
+        <span class="deepest-lbl">Worst-Case Static Traversal Pathway</span>
+        <span class="deepest-badge \${cls(best?best.depth:0, T)}">\${cls(best?best.depth:0, T).toUpperCase()}</span>
+      </div>
+      <div class="call-flow-diagram">
+        \${flowDiagramHtml}
+      </div>
+      <div class="deepest-meta">
+        <span class="deepest-chain-title">\${best ? best.steps.map(s=>s.name).join(' ➔ ') : ''}</span>
+        <span class="deepest-headroom" style="color: \${best && best.depth > T ? 'var(--danger)' : 'var(--success)'}">
+          \${best && best.depth > T ? \`Ceiling violation: +\${fmt(best.depth - T)} over budget\` : \`Headroom margin: \${fmt(T - (best?best.depth:0))} remaining\`}
+        </span>
+      </div>
+    </div>
+
+    \${alertSectionHtml}
+    \${changesHtml}
+
+    <div class="chart-panel glass">
+      <div class="chart-hdr">
+        <span class="chart-title">Call Graph Core Stack Pathway Depths</span>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--success)"></div>Safe</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--warning)"></div>Warning</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--danger)"></div>Overflow</div>
+        </div>
+      </div>
+      <div style="position:relative; width:100%; height:\${Math.max(200,data.chains.length*44+40)}px;">
+        <canvas id="cChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chains-panel glass">
+      <div class="panel-title-bar">
+        <span class="panel-title-text">Call Chain Hierarchy Visualizer</span>
+        <span class="panel-title-badge">\${data.chains.length} Total Chains</span>
+      </div>
+      \${chainsAccordionHtml}
+    </div>
+
+    <div class="dashboard-row">
+      <div class="heatmap-panel glass">
+        <div class="heatmap-search-bar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" class="search-input" id="heatmapSearch" placeholder="Search functions..." oninput="filterHeatmap(this.value)">
+        </div>
+        <div class="heatmap-list" id="heatmapList">
+          \${data.functions.map(f=>\`
+            <div class="heatmap-row" onclick="selectFunction('\${f.name}', \${f.size}, this)">
+              <span class="heatmap-fn">\${f.name}</span>
+              <div class="heatmap-bar-track"><div class="heatmap-bar-fill" style="width:\${Math.max(3,(f.size/maxFn)*100)}%"></div></div>
+              <span class="heatmap-size">\${f.size} B</span>
+            </div>\`).join('')}
+        </div>
+      </div>
+
+      <div class="code-viewer-panel glass">
+        <div class="code-viewer-hdr">
+          <span class="code-title" id="codeViewerTitle">LLVM IR MODULE VIEW</span>
+          <span style="font-size:0.65rem; color:var(--text-muted); font-family:var(--font-mono); background:rgba(255,255,255,0.03); padding:0.25rem 0.6rem; border-radius:4px; border:1px solid var(--glass-border);">READ ONLY</span>
+        </div>
+        <pre class="code-body"><code id="codeViewerBody">\${getMockIR(data.functions[0]?.name || 'module', data.functions[0]?.size || 0)}</code></pre>
+        <div class="code-tip-box" id="codeViewerTip">
+          \${getMockTip(data.functions[0]?.name || 'module', data.functions[0]?.size || 0)}
+        </div>
+      </div>
+    </div>
+
+    <div class="exporter-row glass">
+      <div class="exporter-left">
+        <span class="exporter-lbl">Generate Static Analysis Reports</span>
+        <span class="exporter-desc">Export current caller chain allocations and diagnostic logs into portable layouts.</span>
+      </div>
+      <div class="exporter-btns">
+        <button class="export-btn" onclick="exportMarkdown()">📄 Export Markdown</button>
+        <button class="export-btn" onclick="exportTXT()">📝 Export Plain Text</button>
+      </div>
+    </div>
+  \`;
+
+  // Attach dynamic events for the sandbox heap slider if it exists in DOM
+  const heapSlider = document.getElementById('heapLimitRange');
+  const heapSliderDeck = document.getElementById('heapSliderDeck');
+  if (heapSlider) {
+    if (activeStrategy === 'heap') {
+      heapSliderDeck.style.display = 'flex';
+    }
+    heapSlider.addEventListener('input', e => {
+      heapLimit = parseInt(e.target.value);
+      applyStrategy('heap');
+    });
+  }
+
+  // Draw customized Chart.js
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  
+  const ctx = document.getElementById('cChart');
+  if (ctx) {
+    const barColors = data.chains.map(c => c.depth > T ? '#f43f5e' : c.depth > T*0.75 ? '#f59e0b' : '#10b981');
+    chartInst = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.chains.map(c => c.steps.length ? c.steps[0].name : '#'+c.rank),
+        datasets: [{
+          data: data.chains.map(c=>c.depth),
+          backgroundColor: barColors,
+          borderWidth: 0,
+          borderRadius: 4,
+          barThickness: 16
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0b0a14',
+            titleColor: '#fff',
+            titleFont: { family: 'Plus Jakarta Sans', weight: 'bold', size: 12 },
+            bodyFont: { family: 'JetBrains Mono', size: 11 },
+            borderColor: 'rgba(255, 255, 255, 0.08)',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              title: items => { const c = data.chains[items[0].dataIndex]; return c.steps.map(s=>s.name).join(' → '); },
+              label: ctx => ' Depth: ' + ctx.raw + ' bytes',
+              afterLabel: ctx => { const c = data.chains[ctx.dataIndex]; return c.steps.map(s=>'  '+s.name+' ('+s.size+'B)'); }
+            }
+          }
+        },
+        scales: {
+          x: { 
+            ticks: { color: '#94a3b8', font: { size: 10, family: 'JetBrains Mono' } }, 
+            grid: { color: 'rgba(255,255,255,0.03)' }, 
+            border: { color: 'rgba(255,255,255,0.05)' } 
+          },
+          y: { 
+            ticks: { color: '#94a3b8', font: { size: 10, family: 'JetBrains Mono' } }, 
+            grid: { display: false }, 
+            border: { display: false } 
+          }
+        }
+      }
+    });
+  }
+
+  // Pre-select first heatmap row
+  const firstRow = document.querySelector('.heatmap-row');
+  if (firstRow) firstRow.classList.add('selected');
+}
+
+// Heatmap Searching
+function filterHeatmap(query) {
+  const rows = document.querySelectorAll('.heatmap-row');
+  rows.forEach(row => {
+    const fnName = row.querySelector('.heatmap-fn').textContent.toLowerCase();
+    if (fnName.includes(query.toLowerCase())) {
+      row.style.display = 'flex';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+
+// Heatmap Item Select
+function selectFunction(name, size, rowEl) {
+  document.querySelectorAll('.heatmap-row').forEach(row => row.classList.remove('selected'));
+  rowEl.classList.add('selected');
+  
+  document.getElementById('codeViewerTitle').textContent = `LLVM IR VIEW: @\${name}`;
+  document.getElementById('codeViewerBody').innerHTML = getMockIR(name, size);
+  document.getElementById('codeViewerTip').innerHTML = getMockTip(name, size);
+}
+</script>
+</body>
+</html>
+"""
+    
+    # Overwrite index.html
+    try:
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(html_content)
+        print("Success: index.html has been successfully updated to the premium AeroStack UI!")
+    except Exception as e:
+        print(f"Error writing to index.html: {e}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
