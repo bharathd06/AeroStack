@@ -9,7 +9,7 @@ AeroStack is an enterprise-grade static analysis tool built using the LLVM compi
 
 ---
 
-## 🚀 Evaluator's Foolproof Quick-Start
+## 🚀  Getting Started
 
 To make evaluating this project as seamless as possible, we have ensured complete path portability and cross-compiler toolchain compatibility (fully tested on WSL, Ubuntu, Debian, and Alpine Linux).
 
