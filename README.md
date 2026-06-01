@@ -5,7 +5,7 @@ AeroStack is an enterprise-grade static analysis tool built using the LLVM compi
 ---
 
 ## 🎥 Video Demonstration
-* **Click here to watch the complete walkthrough:** [Watch AeroStack Walkthrough Video (Google Drive)](INSERT_YOUR_GOOGLE_DRIVE_LINK_HERE)
+* **Click here to watch the complete walkthrough:** [Watch AeroStack Walkthrough Video (Google Drive)](https://drive.google.com/file/d/1UjFr57uZF1BBrMQMWC6TUJ51P7r5OT0C/view?usp=sharing)
 
 ---
 
